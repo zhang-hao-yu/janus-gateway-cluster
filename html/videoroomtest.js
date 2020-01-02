@@ -52,7 +52,7 @@ var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-"+Janus.randomString(12);
 
-var myroom = 1234;	// Demo room
+var myroom = 0;	// Demo room
 var myusername = null;
 var myid = null;
 var mystream = null;
@@ -101,6 +101,8 @@ $(document).ready(function() {
 											$(this).attr('disabled', true);
 											janus.destroy();
 										});
+									
+									createVideoroom();
 								},
 								error: function(error) {
 									Janus.error("  -- Error attaching plugin...", error);
@@ -357,6 +359,27 @@ function checkEnter(field, event) {
 	} else {
 		return true;
 	}
+}
+
+function createVideoroom() {
+	var register = { "request": "create", "room": 1001, "description": "janustest" };
+
+	sfutest.send({
+		"message": register,
+		success: function (msg) {
+			var roomId = msg["room"];
+			if (roomId === undefined) {
+				myroom = 1001;
+			} else {
+				myroom = roomId;
+			}
+			Janus.log("vidoeroomtest.js: " + "createVideoroom success: " + "myroom :" + myroom);
+		},
+		error: function (msg) {
+			myroom = 1001;
+			Janus.error("vidoeroomtest.js: " + "createVideoroom error: " + msg);	// FIXME
+		}
+	});
 }
 
 function registerUsername() {
